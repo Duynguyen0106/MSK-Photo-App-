@@ -1,14 +1,23 @@
+/// MSK Suite shared core — models, services, and constants.
+library;
+
+// Constants
+export 'constants.dart';
+
+// Models
 export 'models/assessment.dart';
 export 'models/body_part.dart';
 export 'models/check_in.dart';
 export 'models/landmark_data.dart';
 export 'models/observation.dart';
-export 'models/pose_result.dart';
 export 'models/patient.dart';
 export 'models/patient_record.dart';
 export 'models/pose_observation.dart';
+export 'models/pose_result.dart';
 export 'models/red_flag.dart';
 export 'models/symptom_report.dart';
+
+// Services
 export 'services/camera_capture_service.dart';
 export 'services/csv_export_service.dart';
 export 'services/disclaimer_service.dart';
@@ -19,9 +28,9 @@ export 'services/patient_roster_service.dart';
 export 'services/pdf_export_service.dart';
 export 'services/pdf_service.dart';
 export 'services/photo_consent_service.dart';
-export 'services/question_service.dart';
 export 'services/pose_analysis_service.dart';
 export 'services/pose_service.dart';
+export 'services/question_service.dart';
 export 'services/red_flag_engine.dart';
 export 'services/red_flag_service.dart';
 export 'services/secure_storage_service.dart';

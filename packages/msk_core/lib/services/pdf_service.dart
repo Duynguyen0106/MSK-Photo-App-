@@ -6,6 +6,7 @@ import 'package:image/image.dart' as img;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../constants.dart';
 import '../models/body_part.dart';
 import '../models/check_in.dart';
 import '../models/pose_result.dart';
@@ -200,12 +201,10 @@ class PdfService {
     for (final result in checkIn.poseResults.where((r) => r.success)) {
       for (final entry in result.measurements.entries) {
         if (entry.value == null) continue;
-        final band = _referenceBands[entry.key];
+        final band = MskConstants.referenceRanges[entry.key];
         final valueStr = _formatMeasurement(entry.value!);
-        final refStr = band != null
-            ? '${band.low}-${band.high} ${band.unit}'
-            : '-';
-        final inBand = band != null && _inBand(entry.value!, band);
+        final refStr = band?.bandLabel ?? '-';
+        final inBand = band != null && band.contains(entry.value!);
         rows.add([
           band?.label ?? entry.key,
           valueStr,
@@ -296,7 +295,7 @@ class PdfService {
       final c = curr[key];
       if (p == null && c == null) continue;
       rows.add([
-        _referenceBands[key]?.label ?? key,
+        MskConstants.referenceRanges[key]?.label ?? key,
         p?.toStringAsFixed(1) ?? '-',
         c?.toStringAsFixed(1) ?? '-',
         p != null && c != null ? (c - p).toStringAsFixed(1) : '-',
@@ -402,67 +401,6 @@ class PdfService {
     return diff > 0 ? '+$diff' : '$diff';
   }
 
-  bool _inBand(double value, _ReferenceBand band) =>
-      value >= band.low && value <= band.high;
-
-  static const _referenceBands = <String, _ReferenceBand>{
-    'shoulderHeightDiffCm': _ReferenceBand(
-      label: 'Shoulder height difference',
-      low: 0,
-      high: 2,
-      unit: 'cm',
-    ),
-    'pelvicTiltDeg': _ReferenceBand(
-      label: 'Pelvic tilt',
-      low: -5,
-      high: 5,
-      unit: '°',
-    ),
-    'kneeAlignmentLeftDeg': _ReferenceBand(
-      label: 'Left knee angle',
-      low: 170,
-      high: 180,
-      unit: '°',
-    ),
-    'kneeAlignmentRightDeg': _ReferenceBand(
-      label: 'Right knee angle',
-      low: 170,
-      high: 180,
-      unit: '°',
-    ),
-    'headLateralOffsetCm': _ReferenceBand(
-      label: 'Head lateral offset',
-      low: 0,
-      high: 3,
-      unit: 'cm',
-    ),
-    'forwardHeadAngleDeg': _ReferenceBand(
-      label: 'Forward head angle',
-      low: 40,
-      high: 55,
-      unit: '°',
-    ),
-    'thoracicKyphosisProxyDeg': _ReferenceBand(
-      label: 'Thoracic angle proxy',
-      low: 0,
-      high: 15,
-      unit: '°',
-    ),
-  };
-}
-
-class _ReferenceBand {
-  const _ReferenceBand({
-    required this.label,
-    required this.low,
-    required this.high,
-    required this.unit,
-  });
-
-  final String label;
-  final double low;
-  final double high;
-  final String unit;
 }
 
 class _OverlayImage {
