@@ -13,6 +13,7 @@ export 'services/csv_export_service.dart';
 export 'services/disclaimer_service.dart';
 export 'services/local_storage_service.dart';
 export 'services/observation_formatter.dart';
+export 'services/observation_service.dart';
 export 'services/patient_roster_service.dart';
 export 'services/pdf_export_service.dart';
 export 'services/photo_consent_service.dart';
