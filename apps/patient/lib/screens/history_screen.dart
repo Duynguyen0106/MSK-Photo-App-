@@ -7,7 +7,10 @@ import '../widgets/bottom_nav.dart';
 import '../widgets/disclaimer_banner.dart';
 
 class HistoryScreen extends StatefulWidget {
-  const HistoryScreen({super.key});
+  const HistoryScreen({super.key, this.initialCheckIns});
+
+  /// When set (e.g. in widget tests), skips [StorageService] and uses this list.
+  final List<CheckIn>? initialCheckIns;
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -21,7 +24,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _load();
+    if (widget.initialCheckIns != null) {
+      _checkIns = List.of(widget.initialCheckIns!);
+      _loading = false;
+    } else {
+      _load();
+    }
   }
 
   Future<void> _load() async {
