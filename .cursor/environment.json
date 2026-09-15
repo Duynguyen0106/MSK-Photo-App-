@@ -1,0 +1,8 @@
+{
+  "name": "MSK Suite",
+  "install": "export PATH=\"/opt/flutter/bin:$PATH\" && for d in packages/msk_core apps/patient apps/clinician; do (cd \"$d\" && flutter pub get); done",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  }
+}
