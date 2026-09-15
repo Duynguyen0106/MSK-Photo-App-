@@ -43,6 +43,11 @@ class CheckInProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removePart(BodyPart part) {
+    selectedParts.remove(part);
+    notifyListeners();
+  }
+
   void setPainScore(int score) {
     painScore = score.clamp(0, 10);
     notifyListeners();

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/check_in_provider.dart';
 import '../routes.dart';
+import '../widgets/body_map.dart';
 import '../widgets/disclaimer_banner.dart';
 
 class PainMapScreen extends StatelessWidget {
@@ -15,54 +16,54 @@ class PainMapScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Where do you feel it?')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
+      appBar: AppBar(title: const Text('Where does it hurt?')),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const DisclaimerBanner(),
-          const SizedBox(height: 16),
-          Text(
-            'Tap the areas that feel uncomfortable right now.',
-            style: theme.textTheme.bodyLarge,
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            child: Text(
+              'Tap where it hurts. You can pick more than one.',
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: BodyPart.values.map((part) {
-              final selected = provider.selectedParts.contains(part);
-              return FilterChip(
-                label: Text(labelFor(part)),
-                selected: selected,
-                onSelected: (_) => provider.togglePart(part),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 24),
-          Text('Pain level', style: theme.textTheme.titleMedium),
-          Row(
-            children: [
-              const Text('Mild'),
-              Expanded(
-                child: Slider(
-                  value: provider.painScore.toDouble(),
-                  min: 0,
-                  max: 10,
-                  divisions: 10,
-                  label: '${provider.painScore}',
-                  onChanged: (v) => provider.setPainScore(v.round()),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              child: Center(
+                child: BodyMapView(
+                  selected: provider.selectedParts.toSet(),
+                  onPartTapped: provider.togglePart,
                 ),
               ),
-              const Text('Strong'),
-            ],
+            ),
           ),
-          Text('${provider.painScore} out of 10', textAlign: TextAlign.center),
-          const SizedBox(height: 32),
-          FilledButton(
-            onPressed: provider.selectedParts.isEmpty
-                ? null
-                : () => Navigator.pushNamed(context, AppRoutes.questions),
-            child: const Text('Continue'),
+          if (provider.selectedParts.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: provider.selectedParts.map((part) {
+                  return InputChip(
+                    label: Text(labelFor(part)),
+                    deleteIcon: const Icon(Icons.close, size: 18),
+                    onDeleted: () => provider.removePart(part),
+                  );
+                }).toList(),
+              ),
+            ),
+          SafeArea(
+            minimum: const EdgeInsets.all(20),
+            child: FilledButton(
+              onPressed: provider.selectedParts.isEmpty
+                  ? null
+                  : () => Navigator.pushNamed(context, AppRoutes.questions),
+              child: const Text('Next'),
+            ),
           ),
         ],
       ),
