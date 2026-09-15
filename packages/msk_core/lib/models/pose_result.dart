@@ -68,6 +68,18 @@ class PoseResult {
         'errorMessage': errorMessage,
       };
 
+  /// Failed analysis — no person detected or processing error.
+  factory PoseResult.failure(String imagePath, String errorMessage) =>
+      PoseResult(
+        imagePath: imagePath,
+        landmarks: const [],
+        measurements: const {},
+        confidence: const {},
+        landmarkPixels: const {},
+        success: false,
+        errorMessage: errorMessage,
+      );
+
   factory PoseResult.fromMap(Map<String, dynamic> map) => PoseResult(
         imagePath: map['imagePath'] as String,
         landmarks: (map['landmarks'] as List<dynamic>)
