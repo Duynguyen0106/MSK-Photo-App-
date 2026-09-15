@@ -20,5 +20,6 @@ export 'services/photo_consent_service.dart';
 export 'services/question_service.dart';
 export 'services/pose_analysis_service.dart';
 export 'services/pose_service.dart';
+export 'services/red_flag_engine.dart';
 export 'services/red_flag_service.dart';
 export 'services/secure_storage_service.dart';
