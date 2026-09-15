@@ -3,18 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:msk_core/msk_core.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/assessment_provider.dart';
-import '../widgets/health_disclaimer.dart';
+import '../providers/check_in_provider.dart';
+import '../routes.dart';
+import '../widgets/disclaimer_banner.dart';
 
 class CaptureScreen extends StatefulWidget {
-  const CaptureScreen({
-    super.key,
-    required this.onPhotoCaptured,
-    required this.onManualFallback,
-  });
-
-  final VoidCallback onPhotoCaptured;
-  final VoidCallback onManualFallback;
+  const CaptureScreen({super.key});
 
   @override
   State<CaptureScreen> createState() => _CaptureScreenState();
@@ -43,11 +37,13 @@ class _CaptureScreenState extends State<CaptureScreen> {
         return;
       }
       final controller = await service.createController();
+      if (!mounted) return;
       setState(() {
         _controller = controller;
         _initializing = false;
       });
-    } catch (e) {
+    } catch (_) {
+      if (!mounted) return;
       setState(() {
         _error = 'Camera unavailable';
         _initializing = false;
@@ -64,68 +60,49 @@ class _CaptureScreenState extends State<CaptureScreen> {
   Future<void> _capture() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
     final file = await _controller!.takePicture();
-    final bytes = await file.readAsBytes();
     if (!mounted) return;
-    final provider = context.read<AssessmentProvider>();
-    await provider.processPhoto(
-      imageBytes: bytes,
-      width: _controller!.value.previewSize?.width.toInt() ?? 640,
-      height: _controller!.value.previewSize?.height.toInt() ?? 480,
-    );
-    if (!mounted) return;
-    widget.onPhotoCaptured();
+    final provider = context.read<CheckInProvider>();
+    provider.setUsedManualFallback(false);
+    provider.addPhotoPath(file.path);
+    Navigator.pushNamed(context, AppRoutes.analyzing);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Take a photo')),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  const HealthDisclaimer(),
-                  const SizedBox(height: 8),
-                  Text(
-                    DisclaimerService.photoDisclaimer,
-                    style: theme.textTheme.bodySmall,
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
+      body: Column(
+        children: [
+          const DisclaimerBanner(),
+          Expanded(child: _buildPreview()),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FilledButton.icon(
+                  onPressed: _controller != null ? _capture : null,
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Capture photo'),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: () =>
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.captureFallback,
+                      ),
+                  child: const Text('Use manual entry instead'),
+                ),
+              ],
             ),
-            Expanded(
-              child: _buildPreview(theme),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FilledButton.icon(
-                    onPressed: _controller != null ? _capture : null,
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Capture photo'),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton(
-                    onPressed: widget.onManualFallback,
-                    child: const Text('Enter details manually instead'),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildPreview(ThemeData theme) {
+  Widget _buildPreview() {
     if (_initializing) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -136,12 +113,15 @@ class _CaptureScreenState extends State<CaptureScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.no_photography, size: 48, color: theme.colorScheme.outline),
+              const Icon(Icons.no_photography_outlined, size: 48),
               const SizedBox(height: 12),
               Text(_error ?? 'Camera not available'),
               const SizedBox(height: 16),
               FilledButton(
-                onPressed: widget.onManualFallback,
+                onPressed: () => Navigator.pushReplacementNamed(
+                  context,
+                  AppRoutes.captureFallback,
+                ),
                 child: const Text('Continue without photo'),
               ),
             ],
@@ -149,9 +129,12 @@ class _CaptureScreenState extends State<CaptureScreen> {
         ),
       );
     }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: CameraPreview(_controller!),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: CameraPreview(_controller!),
+      ),
     );
   }
 }
