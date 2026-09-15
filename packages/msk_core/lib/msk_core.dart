@@ -1,5 +1,9 @@
 export 'models/assessment.dart';
+export 'models/body_part.dart';
+export 'models/check_in.dart';
 export 'models/landmark_data.dart';
+export 'models/observation.dart';
+export 'models/pose_result.dart';
 export 'models/patient_record.dart';
 export 'models/pose_observation.dart';
 export 'models/red_flag.dart';
