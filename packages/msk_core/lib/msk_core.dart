@@ -17,6 +17,7 @@ export 'services/observation_service.dart';
 export 'services/patient_roster_service.dart';
 export 'services/pdf_export_service.dart';
 export 'services/photo_consent_service.dart';
+export 'services/question_service.dart';
 export 'services/pose_analysis_service.dart';
 export 'services/pose_service.dart';
 export 'services/red_flag_service.dart';
