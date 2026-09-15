@@ -17,7 +17,9 @@ import '../services/pose_alignment_checker.dart';
 import '../widgets/disclaimer_banner.dart';
 
 class CaptureScreen extends StatefulWidget {
-  const CaptureScreen({super.key});
+  const CaptureScreen({super.key, this.caregiverMode = false});
+
+  final bool caregiverMode;
 
   @override
   State<CaptureScreen> createState() => _CaptureScreenState();
@@ -78,13 +80,16 @@ class _CaptureScreenState extends State<CaptureScreen> {
         throw StateError('No camera found');
       }
 
-      final frontCamera = service.cameras.firstWhere(
-        (c) => c.lensDirection == CameraLensDirection.front,
+      final lensDirection = widget.caregiverMode
+          ? CameraLensDirection.back
+          : CameraLensDirection.front;
+      final camera = service.cameras.firstWhere(
+        (c) => c.lensDirection == lensDirection,
         orElse: () => service.cameras.first,
       );
 
       final controller = CameraController(
-        frontCamera,
+        camera,
         ResolutionPreset.medium,
         enableAudio: false,
         imageFormatGroup: Platform.isAndroid
@@ -282,7 +287,9 @@ class _CaptureScreenState extends State<CaptureScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Front photo'),
+        title: Text(
+          widget.caregiverMode ? 'Take their photo' : 'Front photo',
+        ),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
       ),

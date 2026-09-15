@@ -3,80 +3,76 @@ import 'package:provider/provider.dart';
 
 import '../providers/check_in_provider.dart';
 import '../routes.dart';
+import '../services/analytics_service.dart';
 import '../widgets/disclaimer_banner.dart';
 
 class CaptureFallbackScreen extends StatelessWidget {
   const CaptureFallbackScreen({super.key});
 
-  static const _durationOptions = [
-    ('less_than_week', 'Less than 1 week'),
-    ('1_2_weeks', '1-2 weeks'),
-    ('3_7_days', '3-7 days'),
-    ('more_than_month', 'More than 1 month'),
-  ];
+  void _continueWithCaregiverPhoto(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.capture,
+      arguments: const CaptureRouteArgs(caregiverMode: true),
+    );
+  }
+
+  void _continueWithoutPhoto(BuildContext context) {
+    final provider = context.read<CheckInProvider>();
+    provider.setHasPhoto(false);
+    provider.setUsedManualFallback(true);
+
+    AnalyticsService.instance.logEvent('photo_skipped');
+    Navigator.pushReplacementNamed(context, AppRoutes.analyzing);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<CheckInProvider>();
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Manual entry')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          const DisclaimerBanner(),
-          const SizedBox(height: 16),
-          Text(
-            'Tell us how long this has been going on.',
-            style: theme.textTheme.titleMedium,
+      appBar: AppBar(title: const Text('No problem')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const DisclaimerBanner(padding: EdgeInsets.zero),
+              const SizedBox(height: 28),
+              Text(
+                'No problem',
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'You can still do a symptom-only check-in. Your report will '
+                'have fewer posture details, but it will still work.',
+                style: theme.textTheme.bodyLarge,
+              ),
+              const Spacer(),
+              FilledButton(
+                onPressed: () => _continueWithCaregiverPhoto(context),
+                child: const Text('Someone else will take my photo'),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () => _continueWithoutPhoto(context),
+                child: const Text('Continue without photo'),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _durationOptions.map((entry) {
-              return FilterChip(
-                label: Text(entry.$2),
-                selected: provider.durationKey == entry.$1,
-                onSelected: (_) => provider.setDurationKey(entry.$1),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 16),
-          Text('What makes it worse?', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: ['Sitting', 'Standing', 'Walking', 'Lifting', 'Sleep']
-                .map((label) {
-              final key = label.toLowerCase();
-              final selected = provider.aggravators.contains(key);
-              return FilterChip(
-                label: Text(label),
-                selected: selected,
-                onSelected: (on) {
-                  final next = List<String>.from(provider.aggravators);
-                  if (on) {
-                    next.add(key);
-                  } else {
-                    next.remove(key);
-                  }
-                  provider.setAggravators(next);
-                },
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 32),
-          FilledButton(
-            onPressed: () {
-              provider.setUsedManualFallback(true);
-              Navigator.pushNamed(context, AppRoutes.analyzing);
-            },
-            child: const Text('Continue'),
-          ),
-        ],
+        ),
       ),
     );
   }
+}
+
+/// Route arguments for [CaptureScreen].
+class CaptureRouteArgs {
+  const CaptureRouteArgs({this.caregiverMode = false});
+
+  final bool caregiverMode;
 }

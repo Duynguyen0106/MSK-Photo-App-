@@ -5,7 +5,7 @@ import 'providers/check_in_provider.dart';
 import 'routes.dart';
 import 'screens/analyzing_screen.dart';
 import 'screens/capture_fallback_screen.dart';
-import 'screens/capture_screen.dart';
+import 'screens/capture_screen.dart' show CaptureScreen;
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/pain_map_screen.dart';
@@ -38,12 +38,22 @@ class PatientApp extends StatelessWidget {
           AppRoutes.questions: (_) => const QuestionsScreen(),
           AppRoutes.redFlag: (_) => const RedFlagScreen(),
           AppRoutes.whyPhoto: (_) => const WhyPhotoScreen(),
-          AppRoutes.capture: (_) => const CaptureScreen(),
           AppRoutes.captureFallback: (_) => const CaptureFallbackScreen(),
           AppRoutes.analyzing: (_) => const AnalyzingScreen(),
           AppRoutes.result: (_) => const ResultScreen(),
           AppRoutes.history: (_) => const HistoryScreen(),
           AppRoutes.settings: (_) => const SettingsScreen(),
+        },
+        onGenerateRoute: (settings) {
+          if (settings.name == AppRoutes.capture) {
+            final args = settings.arguments;
+            final caregiverMode = args is CaptureRouteArgs && args.caregiverMode;
+            return MaterialPageRoute<void>(
+              settings: settings,
+              builder: (_) => CaptureScreen(caregiverMode: caregiverMode),
+            );
+          }
+          return null;
         },
       ),
     );

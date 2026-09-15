@@ -81,6 +81,14 @@ class CheckInProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setHasPhoto(bool value) {
+    hasPhoto = value;
+    if (!value) {
+      photoPaths.clear();
+    }
+    notifyListeners();
+  }
+
   void addPhotoPath(String path) {
     hasPhoto = true;
     if (!photoPaths.contains(path)) {
