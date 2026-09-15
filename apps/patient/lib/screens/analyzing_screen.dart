@@ -14,6 +14,8 @@ class AnalyzingScreen extends StatefulWidget {
 }
 
 class _AnalyzingScreenState extends State<AnalyzingScreen> {
+  String _message = 'Building your summary…';
+
   @override
   void initState() {
     super.initState();
@@ -26,17 +28,29 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
 
     final poseService = PoseService();
     final storage = StorageService();
+
     try {
-      if (!provider.usedManualFallback && provider.photoPaths.isNotEmpty) {
+      if (provider.hasPhoto && provider.photoPaths.isNotEmpty) {
+        if (mounted) {
+          setState(() => _message = 'Detecting posture…');
+        }
+
         for (final path in provider.photoPaths) {
           final result = await poseService.analyze(path, view: 'front');
           provider.setPoseResult('front', result);
         }
+
+        if (mounted) {
+          setState(() => _message = 'Building your summary…');
+        }
+        await Future.delayed(const Duration(milliseconds: 400));
       }
+
       final checkIn = provider.finalizeCheckIn();
       await storage.init();
       await storage.saveCheckIn(checkIn);
-      await Future.delayed(const Duration(milliseconds: 600));
+
+      await Future.delayed(const Duration(milliseconds: 500));
       if (mounted) {
         Navigator.pushReplacementNamed(context, AppRoutes.result);
       }
@@ -49,6 +63,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -59,7 +74,7 @@ class _AnalyzingScreenState extends State<AnalyzingScreen> {
               const CircularProgressIndicator(),
               const SizedBox(height: 24),
               Text(
-                'Recording your information…',
+                _message,
                 style: theme.textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
