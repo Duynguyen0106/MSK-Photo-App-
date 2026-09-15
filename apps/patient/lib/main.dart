@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:msk_core/msk_core.dart' show CheckIn;
 import 'package:provider/provider.dart';
 
 import 'providers/check_in_provider.dart';
@@ -6,6 +7,7 @@ import 'routes.dart';
 import 'screens/analyzing_screen.dart';
 import 'screens/capture_fallback_screen.dart';
 import 'screens/capture_screen.dart' show CaptureScreen;
+import 'screens/history_detail_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/pain_map_screen.dart';
@@ -51,6 +53,13 @@ class PatientApp extends StatelessWidget {
             return MaterialPageRoute<void>(
               settings: settings,
               builder: (_) => CaptureScreen(caregiverMode: caregiverMode),
+            );
+          }
+          if (settings.name == AppRoutes.historyDetail) {
+            final checkIn = settings.arguments as CheckIn;
+            return MaterialPageRoute<void>(
+              settings: settings,
+              builder: (_) => HistoryDetailScreen(checkIn: checkIn),
             );
           }
           return null;

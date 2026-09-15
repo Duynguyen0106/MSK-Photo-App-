@@ -10,5 +10,6 @@ abstract final class AppRoutes {
   static const analyzing = '/analyzing';
   static const result = '/result';
   static const history = '/history';
+  static const historyDetail = '/history-detail';
   static const settings = '/settings';
 }
