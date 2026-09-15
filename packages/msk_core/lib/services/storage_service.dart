@@ -24,9 +24,17 @@ class StorageService {
     if (_initialized) return;
 
     if (path != null) {
-      Hive.init(path);
+      try {
+        Hive.init(path);
+      } on HiveError {
+        // Hive may already be initialised with this path.
+      }
     } else {
-      await Hive.initFlutter();
+      try {
+        await Hive.initFlutter();
+      } on HiveError {
+        // Hive may already be initialised (e.g. widget tests).
+      }
     }
 
     _registerAdapters();
