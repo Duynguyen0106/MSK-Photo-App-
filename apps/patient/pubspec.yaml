@@ -1,0 +1,37 @@
+name: patient
+description: MSK Suite — patient-facing app.
+publish_to: none
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.5.0
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  msk_core:
+    path: ../../packages/msk_core
+  provider: ^6.1.2
+  camera: ^0.11.0+2
+  permission_handler: ^11.3.1
+  path_provider: ^2.1.4
+  google_mlkit_commons: ^0.11.0
+  google_mlkit_pose_detection: ^0.14.0
+  cupertino_icons: ^1.0.8
+  path_drawing: ^1.0.1
+  xml: ^6.5.0
+  printing: ^5.13.4
+  fl_chart: ^0.69.0
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/body_map.svg
+    - assets/silhouette_front.png

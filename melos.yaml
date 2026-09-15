@@ -1,0 +1,16 @@
+name: msk_suite
+
+packages:
+  - packages/**
+  - apps/**
+
+scripts:
+  analyze:
+    run: melos exec -- flutter analyze
+    description: Run flutter analyze in all packages.
+  test:
+    run: melos exec -- flutter test
+    description: Run tests in all packages.
+  get:
+    run: melos exec -- flutter pub get
+    description: Run flutter pub get in all packages.
