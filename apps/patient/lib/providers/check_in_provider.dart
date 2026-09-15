@@ -9,7 +9,7 @@ class CheckInProvider extends ChangeNotifier {
 
   List<BodyPart> selectedParts = [];
   int painScore = 0;
-  String durationKey = 'less_than_week';
+  String durationKey = 'days';
   final List<String> aggravators = [];
   final Set<RedFlag> redFlags = {};
   List<String> questions = [];
@@ -149,7 +149,7 @@ class CheckInProvider extends ChangeNotifier {
   void reset() {
     selectedParts = [];
     painScore = 0;
-    durationKey = 'less_than_week';
+    durationKey = 'days';
     aggravators.clear();
     redFlags.clear();
     questions = [];

@@ -10,6 +10,7 @@ import 'screens/history_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/pain_map_screen.dart';
 import 'screens/questions_screen.dart';
+import 'screens/red_flag_screen.dart';
 import 'screens/result_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/why_photo_screen.dart';
@@ -35,6 +36,7 @@ class PatientApp extends StatelessWidget {
           AppRoutes.home: (_) => const HomeScreen(),
           AppRoutes.painMap: (_) => const PainMapScreen(),
           AppRoutes.questions: (_) => const QuestionsScreen(),
+          AppRoutes.redFlag: (_) => const RedFlagScreen(),
           AppRoutes.whyPhoto: (_) => const WhyPhotoScreen(),
           AppRoutes.capture: (_) => const CaptureScreen(),
           AppRoutes.captureFallback: (_) => const CaptureFallbackScreen(),
